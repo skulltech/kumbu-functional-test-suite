@@ -1,5 +1,7 @@
 from selenium import webdriver
 import time
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -63,3 +65,20 @@ def test_l003():
     flashes[0].find_element_by_class_name('close-button').click()
 
     test_l001()
+
+
+def test_m001():
+    test_l001()
+
+    driver = webdriver.Chrome()
+    driver.find_element_by_class_name('souvenirs-menu-link').click()
+
+    prior = 0
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        current = len(WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.item.columns'))))
+        if current == prior:
+            break
+        prior = current
+
+    items = current
