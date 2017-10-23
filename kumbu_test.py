@@ -77,8 +77,21 @@ def test_m001():
     while True:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         current = len(WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.item.columns'))))
-        if current == prior:
-            break
-        prior = current
 
-    items = current
+        if current != prior:
+            prior = current
+        else:
+            break
+
+    count = current
+
+
+def test_m002():
+    test_l001()
+
+    driver = webdriver.Chrome()
+    driver.find_element_by_class_name('souvenirs-menu-link').click()
+    driver.find_element_by_css_selector('ul.dropdown.menu > li').click()
+    driver.find_element_by_class_name('sort-by-title').click()
+
+    '''Not completed'''
