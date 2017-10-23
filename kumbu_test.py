@@ -11,7 +11,11 @@ def test_l001():
     driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
     driver.find_element_by_id('login-submit').click()
 
-    # Assertion part to be done.
+    links = driver.find_elements_by_class_name('profile-link')
+    assert len(links) != 0 and 'Kumbu Test M2' in links[0].text
+    links[0].click()
+
+    '''Profile Panel is not implemented yet!'''
 
 
 def test_l002():
