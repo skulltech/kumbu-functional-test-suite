@@ -1,4 +1,5 @@
 from selenium import webdriver
+import time
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -20,7 +21,41 @@ def test_l002():
     driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
     driver.find_element_by_name('inputPassword').send_keys('kumbu ​is ​not ​cool')
     driver.find_element_by_id('login-submit').click()
-    flashes = driver.find_elements_by_id('flash-messages')
 
-    assert len(flashes) != 0 and flashes[0].text.strip() == 'Invalid email or password'
+    flashes = driver.find_elements_by_id('flash-messages')
+    assert len(flashes) != 0 and 'Invalid email or password' in flashes[0].text
     flashes[0].find_element_by_class_name('close-button').click()
+
+
+def test_l003():
+    driver = webdriver.Chrome()
+
+    driver.get('https://staging.getkumbu.com')
+    driver.find_element_by_class_name('password-link').click()
+    assert 'https://staging.getkumbu.com/reset' in driver.current_url
+
+    driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
+    driver.find_element_by_id('login-submit').click()
+
+    flashes = driver.find_elements_by_id('flash-messages')
+    assert len(flashes) != 0 and 'An email to reset your password has been sent' in flashes[0].text
+    flashes[0].find_element_by_class_name('close-button').click()
+    time.sleep(5)
+
+    driver.get('https://www.mailinator.com/v2/inbox.jsp?zone=public&query=kumbutest#')
+    driver.find_element_by_xpath('//div[contains(text(), "Reset your Kumbu password")]').click()
+
+    frame = driver.find_element_by_id('msg-body')
+    driver.switch_to.frame(frame)
+    driver.find_element_by_class_name('mcnButton').click()
+
+    driver.switch_to.window(driver.window_handles[1])
+    driver.find_element_by_id('inputPassword').send_keys('$PASSWORD')
+    driver.find_element_by_id('confirmPassword').send_keys('$PASSWORD')
+    driver.find_element_by_id('login-submit').click()
+
+    flashes = driver.find_elements_by_id('flash-messages')
+    assert len(flashes) != 0 and 'Your password has been successfully changed' in flashes[0].text
+    flashes[0].find_element_by_class_name('close-button').click()
+
+    test_l001()
