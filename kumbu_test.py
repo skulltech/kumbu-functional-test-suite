@@ -14,6 +14,12 @@ class TestKumbuFunctional:
         yield driver
         driver.quit()
 
+    @staticmethod
+    def verify_flash_message(driver, message):
+        flashes = driver.find_elements_by_id('flash-messages')
+        assert len(flashes) != 0 and message in flashes[0].text
+        flashes[0].find_element_by_class_name('close-button').click()
+
     def test_l001(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
@@ -31,10 +37,7 @@ class TestKumbuFunctional:
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
         driver.find_element_by_name('inputPassword').send_keys('kumbu ​is ​not ​cool')
         driver.find_element_by_id('login-submit').click()
-
-        flashes = driver.find_elements_by_id('flash-messages')
-        assert len(flashes) != 0 and 'Invalid email or password' in flashes[0].text
-        flashes[0].find_element_by_class_name('close-button').click()
+        self.verify_flash_message(driver, 'Invalid email or password')
 
     def test_l003(self, driver):
         driver.get('https://staging.getkumbu.com')
@@ -43,10 +46,7 @@ class TestKumbuFunctional:
 
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
         driver.find_element_by_id('login-submit').click()
-
-        flashes = driver.find_elements_by_id('flash-messages')
-        assert len(flashes) != 0 and 'An email to reset your password has been sent' in flashes[0].text
-        flashes[0].find_element_by_class_name('close-button').click()
+        self.verify_flash_message(driver, 'An email to reset your password has been sent')
         time.sleep(5)
 
         driver.get('https://www.mailinator.com/v2/inbox.jsp?zone=public&query=kumbutest#')
@@ -61,10 +61,7 @@ class TestKumbuFunctional:
         driver.find_element_by_id('confirmPassword').send_keys('$PASSWORD')
         driver.find_element_by_id('login-submit').click()
 
-        flashes = driver.find_elements_by_id('flash-messages')
-        assert len(flashes) != 0 and 'Your password has been successfully changed' in flashes[0].text
-        flashes[0].find_element_by_class_name('close-button').click()
-
+        self.verify_flash_message(driver, 'Your password has been successfully changed')
         self.test_l001()
 
     def test_m001(self):
