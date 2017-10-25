@@ -29,7 +29,9 @@ class TestKumbuFunctional:
         assert len(links) != 0 and 'Kumbu Test M2' in links[0].text
         links[0].click()
 
-        '''Profile Panel is not implemented yet!'''
+        assert len(driver.find_elements_by_class_name('profile-modal')) != 0
+        driver.find_element_by_class_name('profile-tab-signout').click()
+        assert 'https://staging.getkumbu.com/login' in driver.current_url
 
     def test_l002(self, driver):
         driver.get('https://staging.getkumbu.com')
