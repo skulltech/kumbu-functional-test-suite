@@ -25,17 +25,23 @@ class TestKumbuFunctional:
         assert len(flashes) != 0 and message in flashes[0].text
         flashes[0].find_element_by_class_name('close-button').click()
 
-    def test_l001(self, driver):
+    @staticmethod
+    def sign_in(driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
         driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
         driver.find_element_by_id('login-submit').click()
 
+    def test_l001(self, driver):
+        self.sign_in(driver)
+
         links = driver.find_elements_by_class_name('profile-link')
         assert len(links) != 0 and 'Kumbu Test M2' in links[0].text
         links[0].click()
 
-        assert len(driver.find_elements_by_class_name('profile-modal')) != 0
+        # Asserting that the element is found.
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'profile-modal')))
+
         driver.find_element_by_class_name('profile-tab-signout').click()
         assert 'https://staging.getkumbu.com/login' in driver.current_url
 
@@ -57,22 +63,25 @@ class TestKumbuFunctional:
         time.sleep(5)
 
         driver.get('https://www.mailinator.com/v2/inbox.jsp?zone=public&query=kumbutest#')
-        driver.find_element_by_xpath('//div[contains(text(), "Reset your Kumbu password")]').click()
+        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//div[contains(text(), "Reset your Kumbu password")]')))
+        element.click()
 
-        frame = driver.find_element_by_id('msg-body')
+        frame = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'msg_body')))
         driver.switch_to.frame(frame)
-        driver.find_element_by_class_name('mcnButton').click()
+        button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mcnButton')))
+        button.click()
 
         driver.switch_to.window(driver.window_handles[1])
-        driver.find_element_by_id('inputPassword').send_keys('$PASSWORD')
-        driver.find_element_by_id('confirmPassword').send_keys('$PASSWORD')
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.NAME, 'inputPassword')))
+        driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
+        driver.find_element_by_name('confirmPassword').send_keys('$PASSWORD')
         driver.find_element_by_id('login-submit').click()
 
         self.verify_flash_message(driver, 'Your password has been successfully changed')
         self.test_l001(driver)
 
     def test_m001(self, driver):
-        self.test_l001(driver)
+        self.sign_in(driver)
 
         driver.find_element_by_class_name('souvenirs-menu-link').click()
 
