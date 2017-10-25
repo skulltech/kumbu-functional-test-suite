@@ -6,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-@pytest.mark.usefixtures('driver')
 class TestKumbuFunctional:
     @pytest.fixture(scope='class')
     def driver(self):
@@ -62,12 +61,11 @@ class TestKumbuFunctional:
         driver.find_element_by_id('login-submit').click()
 
         self.verify_flash_message(driver, 'Your password has been successfully changed')
-        self.test_l001()
+        self.test_l001(driver)
 
-    def test_m001(self):
-        self.test_l001()
+    def test_m001(self, driver):
+        self.test_l001(driver)
 
-        driver = webdriver.Chrome()
         driver.find_element_by_class_name('souvenirs-menu-link').click()
 
         prior = 0
@@ -82,10 +80,9 @@ class TestKumbuFunctional:
 
         count = current
 
-    def test_m002(self):
-        self.test_l001()
+    def test_m002(self, driver):
+        self.test_l001(driver)
 
-        driver = webdriver.Chrome()
         driver.find_element_by_class_name('souvenirs-menu-link').click()
         driver.find_element_by_css_selector('ul.dropdown.menu > li').click()
         driver.find_element_by_class_name('sort-by-title').click()
