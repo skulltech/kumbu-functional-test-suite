@@ -8,10 +8,16 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class TestKumbuFunctional:
     @pytest.fixture(scope='class')
-    def driver(self):
-        driver = webdriver.Chrome()
+    def webdriver(self):
+        driver = webdriver.Firefox()
         yield driver
         driver.quit()
+
+    @pytest.fixture(scope='function')
+    def driver(self, webdriver):
+        yield webdriver
+        webdriver.delete_all_cookies()
+        webdriver.get('https://www.google.com')
 
     @staticmethod
     def verify_flash_message(driver, message):
