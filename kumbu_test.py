@@ -119,8 +119,8 @@ class TestKumbuFunctional:
     @passing
     def test_s001(self, driver):
         self.sign_in(driver)
-        memories_collection = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
-        driver.get(memories_collection)
+        memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
+        driver.get(memories)
         number = int(driver.find_element_by_class_name('collection-item-number').text)
         driver.find_element_by_id('shareCollection').click()
         copy = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, 'collection-share-link-copy')))
@@ -130,6 +130,17 @@ class TestKumbuFunctional:
         driver.get(Tk().clipboard_get())
 
         assert number == self.count_tiles(driver)
+
+    @passing
+    def test_s002(self, driver):
+        shared_memories = 'https://sharestaging.getkumbu.com/collection/SCd3fd68d4-188b-47cf-853e-7a27f4d05a00/'
+        driver.get(shared_memories)
+        driver.find_element_by_class_name('item-thumbnail').click()
+        back = driver.find_element_by_id('quit-nav')
+        assert 'Back to Memories' in back.text and len(driver.find_elements_by_css_selector('div.picture-item > img')) != 0
+        back.click()
+        self.count_tiles(driver)
+        assert len(driver.find_elements_by_css_selector('div.item.columns')) != 0
 
     @passing
     def test_m001(self, driver):
