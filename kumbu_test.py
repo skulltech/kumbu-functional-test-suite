@@ -142,6 +142,17 @@ class TestKumbuFunctional:
         self.count_tiles(driver)
         assert len(driver.find_elements_by_css_selector('div.item.columns')) != 0
 
+    def test_s003(self, driver):
+        self.sign_in(driver)
+        memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
+        driver.get(memories)
+        driver.find_element_by_id('shareCollection').click()
+        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'share-modal')))
+        driver.find_element_by_id('removeShareCollection').click()
+        shared_memories = 'https://sharestaging.getkumbu.com/collection/SCd3fd68d4-188b-47cf-853e-7a27f4d05a00/'
+        driver.get(shared_memories)
+        assert len(driver.find_elements_by_class_name('content-404')) != 0
+
     @passing
     def test_m001(self, driver):
         self.sign_in(driver)
