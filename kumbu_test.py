@@ -98,16 +98,18 @@ class TestKumbuFunctional:
 
         count = current
 
-    def test_m002(self, driver):
+    def test_m002(self, driver): # Not passing yet.
         self.sign_in(driver)
 
-        items = [link.get_attribute('data-kumbu-item-id') for link in driver.find_elements_by_css_selector('div.item.columns > a')]
         driver.find_element_by_class_name('souvenirs-menu-link').click()
+        items = [link.get_attribute('data-kumbu-item-id') for link in driver.find_elements_by_css_selector('div.item.columns > a')]
         elem = driver.find_element_by_css_selector('ul.dropdown.menu > li')
         hover = ActionChains(driver).move_to_element(elem)
+        sort = driver.find_element_by_class_name('sort-by-title')
         hover.perform()
-        sort = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, 'sort-by-title')))
+        WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, 'sort-by-title')))
         sort.click()
+        time.sleep(5)
         sorted_items = [link.get_attribute('data-kumbu-item-id') for link in driver.find_elements_by_css_selector('div.item.columns > a')]
         smaller = len(min(items, sorted_items))
         assert items[:smaller] != sorted_items[:smaller]
