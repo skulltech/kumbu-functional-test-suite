@@ -4,6 +4,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class TestKumbuFunctional:
@@ -98,10 +99,15 @@ class TestKumbuFunctional:
         count = current
 
     def test_m002(self, driver):
-        self.test_l001(driver)
+        self.sign_in(driver)
 
+        items = [link.get_attribute('data-kumbu-item-id') for link in driver.find_elements_by_css_selector('div.item.columns > a')]
         driver.find_element_by_class_name('souvenirs-menu-link').click()
-        driver.find_element_by_css_selector('ul.dropdown.menu > li').click()
-        driver.find_element_by_class_name('sort-by-title').click()
-
-        '''Not completed'''
+        elem = driver.find_element_by_css_selector('ul.dropdown.menu > li')
+        hover = ActionChains(driver).move_to_element(elem)
+        hover.perform()
+        sort = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, 'sort-by-title')))
+        sort.click()
+        sorted_items = [link.get_attribute('data-kumbu-item-id') for link in driver.find_elements_by_css_selector('div.item.columns > a')]
+        smaller = len(min(items, sorted_items))
+        assert items[:smaller] != sorted_items[:smaller]
