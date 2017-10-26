@@ -1,13 +1,14 @@
 from selenium import webdriver
 import time
 import pytest
+from tkinter import Tk
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-passing = pytest.mark.skip(reason="No need to run the cases that are known to be correct in development.")
+passing = pytest.mark.skip(reason="Completed writing this method")
 
 
 class TestKumbuFunctional:
@@ -35,6 +36,20 @@ class TestKumbuFunctional:
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
         driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
         driver.find_element_by_id('login-submit').click()
+
+    @staticmethod
+    def count_tiles(driver):
+        prior = 0
+        while True:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(4)
+            current = len(WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR,
+                                                                                               'div.item.columns'))))
+            if current != prior:
+                prior = current
+            else:
+                break
+        return current
 
     @passing
     def test_l001(self, driver):
@@ -102,23 +117,28 @@ class TestKumbuFunctional:
         assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
 
     @passing
+    def test_s001(self, driver):
+        self.sign_in(driver)
+        memories_collection = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
+        driver.get(memories_collection)
+        number = int(driver.find_element_by_class_name('collection-item-number').text)
+        driver.find_element_by_id('shareCollection').click()
+        copy = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, 'collection-share-link-copy')))
+        copy.click()
+
+        driver.get('https://staging.getkumbu.com/logout')
+        driver.get(Tk().clipboard_get())
+
+        assert number == self.count_tiles(driver)
+
+    @passing
     def test_m001(self, driver):
         self.sign_in(driver)
 
         driver.find_element_by_class_name('souvenirs-menu-link').click()
+        count = self.count_tiles(driver)
 
-        prior = 0
-        while True:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            current = len(WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.item.columns'))))
-
-            if current != prior:
-                prior = current
-            else:
-                break
-
-        count = current
-
+    @passing
     def test_m002(self, driver):
         self.sign_in(driver)
 
