@@ -14,7 +14,7 @@ passing = pytest.mark.skip(reason="Completed writing this method")
 class TestKumbuFunctional:
     @pytest.fixture(scope='class')
     def webdriver(self):
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
         yield driver
         driver.quit()
 
@@ -123,8 +123,8 @@ class TestKumbuFunctional:
         driver.get(memories)
         number = int(driver.find_element_by_class_name('collection-item-number').text)
         driver.find_element_by_id('shareCollection').click()
-        copy = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, 'collection-share-link-copy')))
-        copy.click()
+        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'share-modal')))
+        driver.find_element_by_class_name('collection-share-link-copy').click()
 
         driver.get('https://staging.getkumbu.com/logout')
         driver.get(Tk().clipboard_get())
@@ -142,6 +142,7 @@ class TestKumbuFunctional:
         self.count_tiles(driver)
         assert len(driver.find_elements_by_css_selector('div.item.columns')) != 0
 
+    @passing
     def test_s003(self, driver):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
@@ -176,3 +177,15 @@ class TestKumbuFunctional:
         sorted_items = [link.get_attribute('data-kumbu-item-id') for link in driver.find_elements_by_css_selector('div.item.columns > a')]
         smaller = len(min(items, sorted_items))
         assert items[:smaller] != sorted_items[:smaller]
+
+    def test_m003(self, driver):
+        self.sign_in(driver)
+
+        overlays = driver.find_elements_by_class_name('item-overlay')[:2]
+        for overlay in overlays:
+            hover = ActionChains(driver).move_to_element(overlay)
+            hover.perform()
+            overlay.find_element_by_css_selector('span.item-selector').click()
+        driver.find_element_by_class_name('delete-selected-items').click()
+        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'delete-modal')))
+        driver.find_element_by_class_name('delete-item-list').click()
