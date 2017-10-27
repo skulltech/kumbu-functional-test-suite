@@ -12,8 +12,8 @@ devmode = False
 draft = pytest.mark.skip(reason="Completed writing this method") if devmode else pytest.mark.foo
 
 
-class TestKumbuFunctional:
-    @pytest.fixture(scope='class')
+class KumbuTestingBase:
+    @pytest.fixture(scope='module')
     def webdriver(self):
         driver = webdriver.Chrome()
         yield driver
@@ -52,6 +52,8 @@ class TestKumbuFunctional:
                 break
         return current
 
+
+class TestLoginExistingUser(KumbuTestingBase):
     @draft
     def test_l001(self, driver):
         self.sign_in(driver)
@@ -103,20 +105,8 @@ class TestKumbuFunctional:
         self.verify_flash_message(driver, 'Your password has been successfully changed')
         self.test_l001(driver)
 
-    @draft
-    def test_c001(self, driver):
-        self.sign_in(driver)
 
-        driver.find_element_by_css_selector('div.secondary-navigation > div > div > ul > li > a').click()
-        title = driver.find_element_by_id('collection-title')
-        title.click()
-        title.send_keys(Keys.CONTROL + 'a')
-        title.send_keys('Collection ​for ​Test ​TEST_NUMBER')
-        title.send_keys(Keys.ENTER)
-        assert '0' in driver.find_element_by_class_name('collection-item-number').text
-        driver.find_element_by_class_name('back-collections').click()
-        assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
-
+class TestWebappSharing(KumbuTestingBase):
     @draft
     def test_s001(self, driver):
         self.sign_in(driver)
@@ -155,6 +145,8 @@ class TestKumbuFunctional:
         driver.get(shared_memories)
         assert len(driver.find_elements_by_class_name('content-404')) != 0
 
+
+class TestWebappMemories(KumbuTestingBase):
     @draft
     def test_m001(self, driver):
         self.sign_in(driver)
@@ -190,3 +182,19 @@ class TestKumbuFunctional:
         driver.find_element_by_class_name('delete-selected-items').click()
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'delete-modal')))
         driver.find_element_by_class_name('delete-item-list').click()
+
+
+class TestWebappCollections(KumbuTestingBase):
+    @draft
+    def test_c001(self, driver):
+        self.sign_in(driver)
+
+        driver.find_element_by_css_selector('div.secondary-navigation > div > div > ul > li > a').click()
+        title = driver.find_element_by_id('collection-title')
+        title.click()
+        title.send_keys(Keys.CONTROL + 'a')
+        title.send_keys('Collection ​for ​Test ​TEST_NUMBER')
+        title.send_keys(Keys.ENTER)
+        assert '0' in driver.find_element_by_class_name('collection-item-number').text
+        driver.find_element_by_class_name('back-collections').click()
+        assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
