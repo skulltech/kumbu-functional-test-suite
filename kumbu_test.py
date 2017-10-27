@@ -8,7 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-passing = pytest.mark.skip(reason="Completed writing this method")
+devmode = False
+draft = pytest.mark.skip(reason="Completed writing this method") if devmode else pytest.mark.foo
 
 
 class TestKumbuFunctional:
@@ -51,7 +52,7 @@ class TestKumbuFunctional:
                 break
         return current
 
-    @passing
+    @draft
     def test_l001(self, driver):
         self.sign_in(driver)
 
@@ -65,7 +66,7 @@ class TestKumbuFunctional:
         driver.find_element_by_class_name('profile-tab-signout').click()
         assert 'https://staging.getkumbu.com/login' in driver.current_url
 
-    @passing
+    @draft
     def test_l002(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
@@ -73,7 +74,7 @@ class TestKumbuFunctional:
         driver.find_element_by_id('login-submit').click()
         self.verify_flash_message(driver, 'Invalid email or password')
 
-    @passing
+    @draft
     def test_l003(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_class_name('password-link').click()
@@ -102,7 +103,7 @@ class TestKumbuFunctional:
         self.verify_flash_message(driver, 'Your password has been successfully changed')
         self.test_l001(driver)
 
-    @passing
+    @draft
     def test_c001(self, driver):
         self.sign_in(driver)
 
@@ -116,7 +117,7 @@ class TestKumbuFunctional:
         driver.find_element_by_class_name('back-collections').click()
         assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
 
-    @passing
+    @draft
     def test_s001(self, driver):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
@@ -131,7 +132,7 @@ class TestKumbuFunctional:
 
         assert number == self.count_tiles(driver)
 
-    @passing
+    @draft
     def test_s002(self, driver):
         shared_memories = 'https://sharestaging.getkumbu.com/collection/SCd3fd68d4-188b-47cf-853e-7a27f4d05a00/'
         driver.get(shared_memories)
@@ -142,7 +143,7 @@ class TestKumbuFunctional:
         self.count_tiles(driver)
         assert len(driver.find_elements_by_css_selector('div.item.columns')) != 0
 
-    @passing
+    @draft
     def test_s003(self, driver):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
@@ -154,14 +155,14 @@ class TestKumbuFunctional:
         driver.get(shared_memories)
         assert len(driver.find_elements_by_class_name('content-404')) != 0
 
-    @passing
+    @draft
     def test_m001(self, driver):
         self.sign_in(driver)
 
         driver.find_element_by_class_name('souvenirs-menu-link').click()
         count = self.count_tiles(driver)
 
-    @passing
+    @draft
     def test_m002(self, driver):
         self.sign_in(driver)
 
