@@ -15,7 +15,7 @@ draft = pytest.mark.skip(reason="Completed writing this method") if devmode else
 class KumbuTestingBase:
     @pytest.fixture(scope='module')
     def webdriver(self):
-        driver = webdriver.Chrome()
+        driver = webdriver.Firefox()
         yield driver
         driver.quit()
 
@@ -31,8 +31,8 @@ class KumbuTestingBase:
         assert len(flashes) != 0 and message in flashes[0].text
         flashes[0].find_element_by_class_name('close-button').click()
 
-    @staticmethod
-    def sign_in(driver):
+    @pytest.fixture(scope='class')
+    def sign_in(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
         driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
@@ -53,8 +53,8 @@ class KumbuTestingBase:
         return current
 
 
+@draft
 class TestLoginExistingUser(KumbuTestingBase):
-    @draft
     def test_l001(self, driver):
         self.sign_in(driver)
 
@@ -62,13 +62,11 @@ class TestLoginExistingUser(KumbuTestingBase):
         assert len(links) != 0 and 'Kumbu Test M2' in links[0].text
         links[0].click()
 
-        # Asserting that the element is found.
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'profile-modal')))
 
         driver.find_element_by_class_name('profile-tab-signout').click()
         assert 'https://staging.getkumbu.com/login' in driver.current_url
 
-    @draft
     def test_l002(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
@@ -76,7 +74,6 @@ class TestLoginExistingUser(KumbuTestingBase):
         driver.find_element_by_id('login-submit').click()
         self.verify_flash_message(driver, 'Invalid email or password')
 
-    @draft
     def test_l003(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_class_name('password-link').click()
@@ -107,7 +104,6 @@ class TestLoginExistingUser(KumbuTestingBase):
 
 
 class TestWebappSharing(KumbuTestingBase):
-    @draft
     def test_s001(self, driver):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
@@ -122,7 +118,6 @@ class TestWebappSharing(KumbuTestingBase):
 
         assert number == self.count_tiles(driver)
 
-    @draft
     def test_s002(self, driver):
         shared_memories = 'https://sharestaging.getkumbu.com/collection/SCd3fd68d4-188b-47cf-853e-7a27f4d05a00/'
         driver.get(shared_memories)
@@ -133,7 +128,6 @@ class TestWebappSharing(KumbuTestingBase):
         self.count_tiles(driver)
         assert len(driver.find_elements_by_css_selector('div.item.columns')) != 0
 
-    @draft
     def test_s003(self, driver):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
@@ -146,15 +140,14 @@ class TestWebappSharing(KumbuTestingBase):
         assert len(driver.find_elements_by_class_name('content-404')) != 0
 
 
+@draft
 class TestWebappMemories(KumbuTestingBase):
-    @draft
     def test_m001(self, driver):
         self.sign_in(driver)
 
         driver.find_element_by_class_name('souvenirs-menu-link').click()
         count = self.count_tiles(driver)
 
-    @draft
     def test_m002(self, driver):
         self.sign_in(driver)
 
@@ -184,8 +177,8 @@ class TestWebappMemories(KumbuTestingBase):
         driver.find_element_by_class_name('delete-item-list').click()
 
 
+@draft
 class TestWebappCollections(KumbuTestingBase):
-    @draft
     def test_c001(self, driver):
         self.sign_in(driver)
 
