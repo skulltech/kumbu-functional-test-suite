@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-devmode = True
+devmode = False
 draft = pytest.mark.skip(reason="Completed writing this method") if devmode else pytest.mark.foo
 
 
@@ -200,4 +200,5 @@ class TestWebappCollections(KumbuTestingBase):
         title.send_keys(Keys.ENTER)
         assert '0' in driver.find_element_by_class_name('collection-item-number').text
         driver.find_element_by_class_name('back-collections').click()
+        driver.refresh()
         assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
