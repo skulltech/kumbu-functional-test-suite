@@ -103,24 +103,34 @@ class TestLoginExistingUser(KumbuTestingBase):
         self.test_l001(driver)
 
 
+@draft
 class TestWebappSharing(KumbuTestingBase):
-    def test_s001(self, driver):
+    @pytest.fixture(scope='class')
+    def shared_collection(self, webdriver):
+        self.sign_in(webdriver)
+        memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
+        webdriver.get(memories)
+        webdriver.find_element_by_id('shareCollection').click()
+        WebDriverWait(webdriver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'share-modal')))
+        webdriver.find_element_by_class_name('collection-share-link-copy').click()
+        webdriver.delete_all_cookies()
+        webdriver.get('https://www.google.com')
+
+        return Tk().clipboard_get()
+
+    def test_s001(self, driver, shared_collection):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
         driver.get(memories)
         number = int(driver.find_element_by_class_name('collection-item-number').text)
-        driver.find_element_by_id('shareCollection').click()
-        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'share-modal')))
-        driver.find_element_by_class_name('collection-share-link-copy').click()
 
         driver.get('https://staging.getkumbu.com/logout')
-        driver.get(Tk().clipboard_get())
+        driver.get(shared_collection)
 
         assert number == self.count_tiles(driver)
 
-    def test_s002(self, driver):
-        shared_memories = 'https://sharestaging.getkumbu.com/collection/SCd3fd68d4-188b-47cf-853e-7a27f4d05a00/'
-        driver.get(shared_memories)
+    def test_s002(self, driver, shared_collection):
+        driver.get(shared_collection)
         driver.find_element_by_class_name('item-thumbnail').click()
         back = driver.find_element_by_id('quit-nav')
         assert 'Back to Memories' in back.text and len(driver.find_elements_by_css_selector('div.picture-item > img')) != 0
@@ -128,15 +138,14 @@ class TestWebappSharing(KumbuTestingBase):
         self.count_tiles(driver)
         assert len(driver.find_elements_by_css_selector('div.item.columns')) != 0
 
-    def test_s003(self, driver):
+    def test_s003(self, driver, shared_collection):
         self.sign_in(driver)
         memories = 'https://staging.getkumbu.com/collection/C03e19a24-23f9-403c-8e96-22b79b23b741/'
         driver.get(memories)
         driver.find_element_by_id('shareCollection').click()
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'share-modal')))
         driver.find_element_by_id('removeShareCollection').click()
-        shared_memories = 'https://sharestaging.getkumbu.com/collection/SCd3fd68d4-188b-47cf-853e-7a27f4d05a00/'
-        driver.get(shared_memories)
+        driver.get(shared_collection)
         assert len(driver.find_elements_by_class_name('content-404')) != 0
 
 
