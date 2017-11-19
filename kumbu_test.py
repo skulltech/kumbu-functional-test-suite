@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-devmode = False
+devmode = True
 draft = pytest.mark.skip(reason="Completed writing this method") if devmode else pytest.mark.foo
 
 
@@ -35,7 +35,7 @@ class KumbuTestingBase:
     def sign_in(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
-        driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
+        driver.find_element_by_name('inputPassword').send_keys('kumbuiscool')
         driver.find_element_by_id('login-submit').click()
 
     @staticmethod
@@ -59,7 +59,7 @@ class TestLoginExistingUser(KumbuTestingBase):
         self.sign_in(driver)
 
         links = driver.find_elements_by_class_name('profile-link')
-        assert len(links) != 0 and 'Kumbu Test M2' in links[0].text
+        assert len(links) != 0 and 'Kumbu Test' in links[0].text
         links[0].click()
 
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'profile-modal')))
@@ -70,7 +70,7 @@ class TestLoginExistingUser(KumbuTestingBase):
     def test_l002(self, driver):
         driver.get('https://staging.getkumbu.com')
         driver.find_element_by_name('inputEmail').send_keys('kumbutest@mailinator.com')
-        driver.find_element_by_name('inputPassword').send_keys('kumbu ​is ​not ​cool')
+        driver.find_element_by_name('inputPassword').send_keys('kumbuis​not​cool')
         driver.find_element_by_id('login-submit').click()
         self.verify_flash_message(driver, 'Invalid email or password')
 
@@ -93,10 +93,10 @@ class TestLoginExistingUser(KumbuTestingBase):
         button = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mcnButton')))
         button.click()
 
-        driver.switch_to.window(driver.window_handles[1])
+        driver.switch_to.window(driver.window_handles[-1])
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.NAME, 'inputPassword')))
-        driver.find_element_by_name('inputPassword').send_keys('$PASSWORD')
-        driver.find_element_by_name('confirmPassword').send_keys('$PASSWORD')
+        driver.find_element_by_name('inputPassword').send_keys('kumbuiscool')
+        driver.find_element_by_name('confirmPassword').send_keys('kumbuiscool')
         driver.find_element_by_id('login-submit').click()
 
         self.verify_flash_message(driver, 'Your password has been successfully changed')
