@@ -175,6 +175,7 @@ class TestWebappMemories(KumbuTestingBase):
 
     def test_m003(self, driver):
         self.sign_in(driver)
+        driver.find_element_by_class_name('souvenirs-menu-link').click()
 
         overlays = driver.find_elements_by_class_name('item-overlay')[:2]
         for overlay in overlays:
