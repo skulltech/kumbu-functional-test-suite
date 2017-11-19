@@ -99,4 +99,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Unversioned file
 .idea/
+chromedriver.exe
+geckodriver.exe
