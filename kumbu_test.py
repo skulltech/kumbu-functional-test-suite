@@ -220,3 +220,23 @@ class TestWebappCollections(KumbuTestingBase):
 
         thumbnail = driver.find_element_by_css_selector('a.item-thumbnail > img').get_attribute('src')
         assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail
+
+    def test_c003(self, driver):
+        self.sign_in(driver)
+
+        driver.get('https://staging.getkumbu.com/collection/C9c3a5b54-f05f-4c1f-8687-775869820def/')
+        driver.find_element_by_id('uploadFiles').click()
+        time.sleep(2)
+
+        file_input = driver.find_element_by_css_selector('input.dz-hidden-input')
+        driver.execute_script(
+            'arguments[0].style = ""; arguments[0].style.display = "block"; arguments[0].style.visibility = "visible";',
+            file_input)
+        file_input.send_keys('C:\\Users\\Sumit\\Pictures\\geralt.jpg')
+        driver.find_element_by_id('confirmUpload').click()
+        time.sleep(20)
+
+        thumbnails = driver.find_elements_by_css_selector('a.item-thumbnail > img')
+        assert len(thumbnails) == 2
+        for thumbnail in thumbnails:
+            assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail.get_attribute('src')
