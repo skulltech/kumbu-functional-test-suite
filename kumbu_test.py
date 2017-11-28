@@ -237,6 +237,7 @@ class TestWebappCollections(KumbuTestingBase):
         for thumbnail in thumbnails:
             assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail.get_attribute('src')
 
+    @draft
     def test_c004(self, driver):
         self.sign_in(driver)
 
@@ -244,3 +245,14 @@ class TestWebappCollections(KumbuTestingBase):
         cover = driver.find_element_by_css_selector('div.collection-navigation-wrapper').get_attribute('data-kumbu-background')[18:]
         thumbnails = [thumb.get_attribute('src')[44:-38] for thumb in driver.find_elements_by_css_selector('a.item-thumbnail > img')]
         assert cover in thumbnails
+
+
+class TestWebappOnboardingNewUsers(KumbuTestingBase):
+    def test_n001(self, driver):
+        driver.get('https://staging.getkumbu.com/logout')
+        driver.find_element_by_css_selector('div.bottom-links > span > a').click()
+
+        driver.find_element_by_name('inputName').send_keys('Kumbu Test 5')
+        driver.find_element_by_name('inputEmail').send_keys('kumbutest5@mailinator.com')
+        driver.find_element_by_name('inputPassword').send_keys('kumbu kumbu kumbu')
+        driver.find_element_by_id('signup-submit').click()
