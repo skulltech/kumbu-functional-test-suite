@@ -188,6 +188,18 @@ class TestWebappMemories(KumbuTestingBase):
 
 
 class TestWebappCollections(KumbuTestingBase):
+    @staticmethod
+    def upload_memory(driver, path):
+        time.sleep(2)
+
+        file_input = driver.find_element_by_css_selector('input.dz-hidden-input')
+        driver.execute_script(
+            'arguments[0].style = ""; arguments[0].style.display = "block"; arguments[0].style.visibility = "visible";',
+            file_input)
+        file_input.send_keys('C:\\Users\\Sumit\\Pictures\\geralt.jpg')
+        driver.find_element_by_id('confirmUpload').click()
+        time.sleep(20)
+
     @draft
     def test_c001(self, driver):
         self.sign_in(driver)
@@ -203,21 +215,13 @@ class TestWebappCollections(KumbuTestingBase):
         driver.refresh()
         assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
 
+    @draft
     def test_c002(self, driver):
         self.sign_in(driver)
 
         driver.find_element_by_class_name('collection-title-wrapper').click()
         driver.find_element_by_id('uploadFilesEmptyCollection').click()
-        time.sleep(2)
-
-        file_input = driver.find_element_by_css_selector('input.dz-hidden-input')
-        driver.execute_script(
-            'arguments[0].style = ""; arguments[0].style.display = "block"; arguments[0].style.visibility = "visible";',
-            file_input)
-        file_input.send_keys('C:\\Users\\Sumit\\Pictures\\geralt.jpg')
-        driver.find_element_by_id('confirmUpload').click()
-        time.sleep(20)
-
+        self.upload_memory(driver, 'C:\\Users\\Sumit\\Pictures\\geralt.jpg')
         thumbnail = driver.find_element_by_css_selector('a.item-thumbnail > img').get_attribute('src')
         assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail
 
@@ -226,16 +230,7 @@ class TestWebappCollections(KumbuTestingBase):
 
         driver.get('https://staging.getkumbu.com/collection/C9c3a5b54-f05f-4c1f-8687-775869820def/')
         driver.find_element_by_id('uploadFiles').click()
-        time.sleep(2)
-
-        file_input = driver.find_element_by_css_selector('input.dz-hidden-input')
-        driver.execute_script(
-            'arguments[0].style = ""; arguments[0].style.display = "block"; arguments[0].style.visibility = "visible";',
-            file_input)
-        file_input.send_keys('C:\\Users\\Sumit\\Pictures\\geralt.jpg')
-        driver.find_element_by_id('confirmUpload').click()
-        time.sleep(20)
-
+        self.upload_memory(driver, 'C:\\Users\\Sumit\\Pictures\\geralt.jpg')
         thumbnails = driver.find_elements_by_css_selector('a.item-thumbnail > img')
         assert len(thumbnails) == 2
         for thumbnail in thumbnails:
