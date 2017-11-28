@@ -225,6 +225,7 @@ class TestWebappCollections(KumbuTestingBase):
         thumbnail = driver.find_element_by_css_selector('a.item-thumbnail > img').get_attribute('src')
         assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail
 
+    @draft
     def test_c003(self, driver):
         self.sign_in(driver)
 
@@ -235,3 +236,11 @@ class TestWebappCollections(KumbuTestingBase):
         assert len(thumbnails) == 2
         for thumbnail in thumbnails:
             assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail.get_attribute('src')
+
+    def test_c004(self, driver):
+        self.sign_in(driver)
+
+        driver.get('https://staging.getkumbu.com/collection/C9c3a5b54-f05f-4c1f-8687-775869820def/')
+        cover = driver.find_element_by_css_selector('div.collection-navigation-wrapper').get_attribute('data-kumbu-background')[18:]
+        thumbnails = [thumb.get_attribute('src')[44:-38] for thumb in driver.find_elements_by_css_selector('a.item-thumbnail > img')]
+        assert cover in thumbnails
