@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-devmode = False
+devmode = True
 draft = pytest.mark.skip(reason="Completed writing this method") if devmode else pytest.mark.foo
 
 
@@ -187,8 +187,8 @@ class TestWebappMemories(KumbuTestingBase):
         driver.find_element_by_class_name('delete-item-list').click()
 
 
-@draft
 class TestWebappCollections(KumbuTestingBase):
+    @draft
     def test_c001(self, driver):
         self.sign_in(driver)
 
@@ -202,3 +202,21 @@ class TestWebappCollections(KumbuTestingBase):
         driver.find_element_by_class_name('back-collections').click()
         driver.refresh()
         assert 'Collection for Test TEST_NUMBER' in driver.find_element_by_css_selector('div.collection.columns').text
+
+    def test_c002(self, driver):
+        self.sign_in(driver)
+
+        driver.find_element_by_class_name('collection-title-wrapper').click()
+        driver.find_element_by_id('uploadFilesEmptyCollection').click()
+        time.sleep(2)
+
+        file_input = driver.find_element_by_css_selector('input.dz-hidden-input')
+        driver.execute_script(
+            'arguments[0].style = ""; arguments[0].style.display = "block"; arguments[0].style.visibility = "visible";',
+            file_input)
+        file_input.send_keys('C:\\Users\\Sumit\\Pictures\\geralt.jpg')
+        driver.find_element_by_id('confirmUpload').click()
+        time.sleep(20)
+
+        thumbnail = driver.find_element_by_css_selector('a.item-thumbnail > img').get_attribute('src')
+        assert 'https://staging.getkumbu.com/item/thumbnail/' in thumbnail
